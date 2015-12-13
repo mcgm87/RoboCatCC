@@ -1,0 +1,79 @@
+#include <Ultrasonic.h>
+#include <VarSpeedServo.h>
+#define trigpin 7//set trigpin
+#define echopin 6//set echopin
+
+
+long lastSample;
+int sTime = 10;
+
+int duration, distance;//declare variable for unltrasonic sensor
+
+VarSpeedServo servoPinfront;
+VarSpeedServo servoPinback;
+
+
+void setup() {
+
+  Serial.begin(9600);
+
+  servoPinfront.attach(11);
+  servoPinback.attach(12);
+
+  pinMode(3, OUTPUT);
+
+  servoPinback.write(60);
+  servoPinfront.write(10);
+
+}
+
+
+void loop()
+{
+  
+ Serial.print("cm"); //print distance unit cm
+   Serial.println(distance);//distance
+//ultrasonic code 
+ digitalWrite(trigpin,HIGH);
+  _delay_ms(500);
+  digitalWrite(trigpin, LOW);
+
+  duration=pulseIn(echopin,HIGH); 
+  distance=(duration/2)/29.1; 
+
+  if (distance > 50)
+  {
+    
+    servoPinback.write(60, 5, true);        // move to 180 degrees, use a speed of 30, wait until move is complete
+    servoPinback.write(90, 5, true);        // move to 0 degrees, use a speed of 30, wait until move is complete
+
+    servoPinfront.write(5, 5, true);        // move to 180 degrees, use a speed of 30, wait until move is complete
+    servoPinfront.write(10, 5, true);        // move to 0 degrees, use a speed of 30, wait until move is complete
+
+    digitalWrite(3, LOW);
+  }
+
+   if (distance < 30)
+  {
+    
+    servoPinback.write(60, 30, false);        // move to 180 degrees, use a speed of 30, wait until move is complete
+    servoPinback.write(80, 30, false);        // move to 0 degrees, use a speed of 30, wait until move is complete
+
+    servoPinfront.write(5, 30, false);        // move to 180 degrees, use a speed of 30, wait until move is complete
+    servoPinfront.write(15, 20, false);        // move to 0 degrees, use a speed of 30, wait until move is complete
+
+    digitalWrite(3, HIGH);
+  }
+  else if (distance < 20)
+  {
+
+    servoPinback.write(60, 25, false);        // move to 180 degrees, use a speed of 30, wait until move is complete
+    servoPinback.write(90, 30, false);        // move to 0 degrees, use a speed of 30, wait until move is complete
+
+    servoPinfront.write(5, 20, false);        // move to 180 degrees, use a speed of 30, wait until move is complete
+    servoPinfront.write(10, 20, false);        // move to 0 degrees, use a speed of 30, wait until move is complete
+
+    digitalWrite(3, HIGH);
+  }
+}
+
